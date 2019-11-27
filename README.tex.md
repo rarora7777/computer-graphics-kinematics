@@ -70,33 +70,33 @@ angles](https://upload.wikimedia.org/wikipedia/commons/9/97/Odessa_TX_Oil_Well_w
 To assemble a skeleton inside our shape will we map each bone from its
 [canonical bone][1.canonicalbone] to its position _and orientation_ in the
 undeformed model. Maintaining the rigidity of the bone, this means for each bone
-there's a rigid transformation $\hat{\T} = (\hat{\Rot} \quad \hat{\t} ) ∈
-\R^{3×4}$ that places its tail and tip to the desired positions in the model. 
+there's a rigid transformation $\widehat{\mathbf{T}} = (\widehat{\mathbf{R}} \quad \widehat{\mathbf{t}} ) \in 
+\mathbf{R}^{3\times 4}$ that places its tail and tip to the desired positions in the model. 
 
 ![](images/rest-bone.png)
 
 We
 use the convention that the "canonical tail" (the origin $(0,0,0)$) is mapped to
 the "rest tail" inside the model. This means that the _translation_ part of the
-matrix $\hat{\T}$ is simply the tail position, $\hat{\s}∈\R^3$:
+matrix $\widehat{\mathbf{T}}$ is simply the tail position, $\widehat{\mathbf{s}}\in \mathbf{R}^3$:
 $$
-\hat{\s} = \hat{\T} \left(\begin{array}{c}0\\\\0\\\\0\\\\1\end{array}\right) =
-\hat{\Rot} \left(\begin{array}{c}0\\\\0\\\\0\end{array}\right) + \hat{\t} 1 = \hat{\t}.
+\widehat{\mathbf{s}} = \widehat{\mathbf{T}} \left(\begin{array}{c}0\\\\mathbf{0}\\\\mathbf{0}\\\\1\end{array}\right) =
+\widehat{\mathbf{R}} \left(\begin{array}{c}0\\\\mathbf{0}\\\\mathbf{0}\end{array}\right) + \widehat{\mathbf{t}} 1 = \widehat{\mathbf{t}}.
 $$
 
 The bone's
 rotation is chosen so that the "canonical tip" $(\ell,0,0)$ maps to the "rest
-tip" $\hat{\d} ∈ \R³$:
+tip" $\widehat{\mathbf{d}} \in  \mathbf{R}^3 $:
 $$
-\hat{\d} = 
-\hat{\T} \left(\begin{array}{c}\ell\\\\0\\\\0\\\\1\end{array}\right) =
-\hat{\Rot}\left(\begin{array}{c}\ell\\\\0\\\\0\end{array}\right) + \hat{\t}.
+\widehat{\mathbf{d}} = 
+\widehat{\mathbf{T}} \left(\begin{array}{c}\ell\\\\mathbf{0}\\\\mathbf{0}\\\\1\end{array}\right) =
+\widehat{\mathbf{R}}\left(\begin{array}{c}\ell\\\\mathbf{0}\\\\mathbf{0}\end{array}\right) + \widehat{\mathbf{t}}.
 $$
 
 Typically the "rest tail" of is coincident with the "rest tip" of its
 parent (if it exists): 
 $$
-\hat{\d}_{p} = \hat{\s}.
+\widehat{\mathbf{d}}_{p} = \widehat{\mathbf{s}}.
 $$
 
 This still leaves any amount of _twisting_ of the bone. In the canonical frame,
@@ -108,7 +108,7 @@ meaningful direction. For example, we may twist a [tibia
 around the $z$-axis means bending at the
 [knee](https://en.wikipedia.org/wiki/Knee).
 
-Each rest transformation $\hat{\T}$ _places_ its corresponding bone inside the
+Each rest transformation $\widehat{\mathbf{T}}$ _places_ its corresponding bone inside the
 undeformed shape. The rest transformations do not measure any deformation of the
 shape from its original position. Thus, the _pose_ of each bone will be measured
 _relative_ to the "rest bone".
@@ -118,49 +118,49 @@ _relative_ to the "rest bone".
 The final state to consider is when a bone is _posed_. That is, mapped to a new
 position and orientation from its rest state. 
 
-In general, each rest bone undergoes a rigid transformation $\T ∈ \R^{3×4}$,
-composed of a rotation $\Rot ∈ \R^{3×3}$ and a translation $\t∈\R^{3}$, mapping each of its 
-rest points $\hat{x} ∈ \R³$ to its corresponding posed postion $\x ∈ \R³$:
+In general, each rest bone undergoes a rigid transformation $\mathbf{T} \in  \mathbf{R}^{3\times 4}$,
+composed of a rotation $\mathbf{R} \in  \mathbf{R}^{3\times 3}$ and a translation $\mathbf{t}\in \mathbf{R}^{3}$, mapping each of its 
+rest points $\widehat{x} \in  \mathbf{R}^3 $ to its corresponding posed postion $\mathbf{x} \in  \mathbf{R}^3 $:
 
 $$
-\x = \T \hat{\x}.
+\mathbf{x} = \mathbf{T} \widehat{\mathbf{x}}.
 $$
 
 ![](images/beast-pose-bone.gif)
 
-$\T$ is expressed as a _global_ mapping of any point in the rest reference frame
+$\mathbf{T}$ is expressed as a _global_ mapping of any point in the rest reference frame
 to its pose position. This makes it convenient for [blending transformations
 (see below)][linearblendskinning], but it's not so obvious how to pick coherent
-values for $\T$. In particular, we would like each bone to rotate about its
+values for $\mathbf{T}$. In particular, we would like each bone to rotate about its
 parent's tip, but this position is determined by the parent's pose
-transformation $\T_p$, which in turn should rotate about the grandparent's tip
+transformation $\mathbf{T}_p$, which in turn should rotate about the grandparent's tip
 and so on.
 
 ### Forward Kinematics
 
-One way to determine the rigid pose transformations $\T_i ∈ \R^{3×4}$ for each
-bone $i$ in a skeleton is to aggregate _relative rotations_ $\overline{\Rot}_i ∈
-\R^{3×3}$ between a bone $i$ and its parent bone $p_i$ in the skeletal tree.
+One way to determine the rigid pose transformations $\mathbf{T}_i \in  \mathbf{R}^{3\times 4}$ for each
+bone $i$ in a skeleton is to aggregate _relative rotations_ $\overline{\mathbf{R}}_i \in 
+\mathbf{R}^{3\times 3}$ between a bone $i$ and its parent bone $p_i$ in the skeletal tree.
 The final transformation at some bone $i$ deep in the skeletal tree is computed
 via a recursive equation.
 
 For each bone, (reading the effect of transformations _right to left_) we first
-_undo_ the map from canonical to rest (i.e., via inverting $\hat{\T}_i$), then
-rotate by our relative rotation $\overline{\Rot}_i$, then map back to rest (via
-$\hat{T}_i$). With our relative transformation accomplished, we continue _up the
+_undo_ the map from canonical to rest (i.e., via inverting $\widehat{\mathbf{T}}_i$), then
+rotate by our relative rotation $\overline{\mathbf{R}}_i$, then map back to rest (via
+$\widehat{T}_i$). With our relative transformation accomplished, we continue _up the
 tree_ [recursively](https://en.wikipedia.org/wiki/Recursion_(computer_science))
 applying our parent's relative transformation, and our grandparent's and so on:
 $$
-\T_i = \T_{p_i} 
-\left(\begin{array}{c} \hat{\T}_i \\\\ 0\ 0\ 0 \ 1\end{array}\right)
-\left(\begin{array}{cccc} \overline{\Rot}_i      & \begin{array}{c}0\\\\0\\\\0\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
-\left(\begin{array}{c} \hat{\T}_i \\\\ 0\ 0\ 0 \ 1\end{array}\right)^{-1}
+\mathbf{T}_i = \mathbf{T}_{p_i} 
+\left(\begin{array}{c} \widehat{\mathbf{T}}_i \\\\ 0\ 0\ 0 \ 1\end{array}\right)
+\left(\begin{array}{cccc} \overline{\mathbf{R}}_i      & \begin{array}{c}0\\\\mathbf{0}\\\\mathbf{0}\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
+\left(\begin{array}{c} \widehat{\mathbf{T}}_i \\\\ 0\ 0\ 0 \ 1\end{array}\right)^{-1}
 $$
 
 > **Question:** Does using relative rotations ensure that bone tails stay
 > coincident with parent tips?
 >
-> **Hint:** What do you get if you multiply $\T_i$ and $\hat{\s}_i$?
+> **Hint:** What do you get if you multiply $\mathbf{T}_i$ and $\widehat{\mathbf{s}}_i$?
 
 As a base case, the _root_ transformation can be defined to be the identity (no
 transformation) or the rigid transformation placing the object/character
@@ -169,27 +169,27 @@ generally into a larger scene.
 This has the great advantage that if the entire model is rotated or translated
 at the root, the relative transformations still apply correctly. This property
 holds locally, too. If bone $i$ controls the [tibia
-(shinbone)](https://en.wikipedia.org/wiki/Tibia) and $\Rot_i$ applies a bend at
+(shinbone)](https://en.wikipedia.org/wiki/Tibia) and $\mathbf{R}_i$ applies a bend at
 the knee, then twisting and bending at the parent hip bone will naturally
 _compose_ with the knee bend.
 
 It is convenient to express the relative rotations of each bone in the
 [canonical frame][1.canonicalbone]. We can utilize canonical twist-bend-twist
-rotations (three [Euler angles][eulerangles], $θ₁,θ₂,θ₃$). Each bone's rotation
+rotations (three [Euler angles][eulerangles], $\theta _1 ,\theta _2 ,\theta _3 $). Each bone's rotation
 is conducted in its canonical frame and then _brought_ through the rest frame
 through a change of coordinates:
 
 $$
-\T_i 
+\mathbf{T}_i 
 = 
-\T_{p_i} 
-\hat{\T}_i
-\left(\begin{array}{cccc} \Rot_x(θ_{i3})      & \begin{array}{c}0\\\\0\\\\0\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
-\left(\begin{array}{cccc} \Rot_z(θ_{i2})      & \begin{array}{c}0\\\\0\\\\0\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
-\left(\begin{array}{cccc} \Rot_x(θ_{i1})      & \begin{array}{c}0\\\\0\\\\0\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
-\left.\hat{\T}_i\right.^{-1}
+\mathbf{T}_{p_i} 
+\widehat{\mathbf{T}}_i
+\left(\begin{array}{cccc} \mathbf{R}_x(\theta _{i3})      & \begin{array}{c}0\\\\mathbf{0}\\\\mathbf{0}\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
+\left(\begin{array}{cccc} \mathbf{R}_z(\theta _{i2})      & \begin{array}{c}0\\\\mathbf{0}\\\\mathbf{0}\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
+\left(\begin{array}{cccc} \mathbf{R}_x(\theta _{i1})      & \begin{array}{c}0\\\\mathbf{0}\\\\mathbf{0}\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
+\left.\widehat{\mathbf{T}}_i\right.^{-1}
 $$
-where the matrix $\Rot_w(φ) ∈ \R^{3×3}$ is the rotation by $φ$ degrees around
+where the matrix $\mathbf{R}_w(\varphi ) \in  \mathbf{R}^{3\times 3}$ is the rotation by $\varphi $ degrees around
 the $w$-axis.
 
 When implementing a skeleton, it is tempting to use a traditional [tree data
@@ -200,8 +200,8 @@ convenient to use a data structure where each node (bone) has a pointer to its
 (unique) parent (other bone). This is ridiculously named a [Spaghetti
 Stack](https://en.wikipedia.org/wiki/Parent_pointer_tree).
 
-> **Question:** What abstract data-structure is good for ensuring a parent's transformation  $\T_{p_i}$
-> are computed before its child's $\T_i$?
+> **Question:** What abstract data-structure is good for ensuring a parent's transformation  $\mathbf{T}_{p_i}$
+> are computed before its child's $\mathbf{T}_i$?
 >
 > **Hint:** 🥞
 
@@ -229,7 +229,7 @@ provide easy movement in every rotational
 direction](https://en.wikipedia.org/wiki/Gimbal_lock). Euler angles model
 rotations as _twist-bend-twist_. For our canonical bones, bending around the
 $z$-axis is easy, but bending around the $y$-axis requires first twisting by
-$90°$ and then "un"-twisting by $-90°$ after bending.
+$90^\circ $ and then "un"-twisting by $-90^\circ $ after bending.
 
 So, for more complex interpolation of rotations, a different representation such
 as [unit quaternions](https://en.wikipedia.org/wiki/Slerp) would be needed. This is
@@ -248,62 +248,62 @@ optimization problem where we try to minimize the distance between the tip of
 the finger and where we want it to be.
 
 Stated mathematically, for a skeleton with $m$ bones, if we create a vector
-$\a ∈ \R^{3m}$ stacking all the Euler angles of each bone vertically:
-$$\a = \left(\begin{array}{c}
-θ_{11} \\\\
-θ_{12} \\\\
-θ_{13} \\\\
-θ_{21} \\\\
-θ_{22} \\\\
-θ_{23} \\\\
+$\mathbf{a} \in  \mathbf{R}^{3m}$ stacking all the Euler angles of each bone vertically:
+$$\mathbf{a} = \left(\begin{array}{c}
+\theta _{11} \\\\
+\theta _{12} \\\\
+\theta _{13} \\\\
+\theta _{21} \\\\
+\theta _{22} \\\\
+\theta _{23} \\\\
 \vdots \\\\
-θ_{m1} \\\\
-θ_{m2} \\\\
-θ_{m3}
+\theta _{m1} \\\\
+\theta _{m2} \\\\
+\theta _{m3}
 \end{array}\right)
 $$
 
-then we can ask for the best vector of angles $θ$. Best-ness must be quantified
+then we can ask for the best vector of angles $\theta $. Best-ness must be quantified
 by an cost/energy/obective-function $E$. This energy is typically first written
 with respect to the (global, non-relative) pose positions of certains bones
-$\x_b ∈ \R³$ (often the "tip" of a
+$\mathbf{x}_b \in  \mathbf{R}^3 $ (often the "tip" of a
 [leaf](https://en.wikipedia.org/wiki/Tree_(data_structure)#Terminology_used_in_trees)
 bone of the skeletal tree, called an [end
 effector](https://en.wikipedia.org/wiki/Robot_end_effector)). For example, we 
 then we could design our energy to measure the squared distance between the pose
-tip $\x_b$ of some bone $b$ and a desired goal location $\q∈\R³$:
+tip $\mathbf{x}_b$ of some bone $b$ and a desired goal location $\mathbf{q}\in \mathbf{R}^3 $:
 
 $$
-E(\x_b) = ‖\x_b - \q‖².
+E(\mathbf{x}_b) = \| \mathbf{x}_b - \mathbf{q}\| ^2 .
 $$
 
-Using forward kinematics, we can express $\x_b$ and in turn $E$ with respect to
+Using forward kinematics, we can express $\mathbf{x}_b$ and in turn $E$ with respect to
 relative rotations: 
 
 $$
-\x_b(\a) = \T_b \hat{\d}_b
+\mathbf{x}_b(\mathbf{a}) = \mathbf{T}_b \widehat{\mathbf{d}}_b
 $$
-where $\T_b$ depends on $θ_{b1},θ_{b2},θ_{b2}$ and $\T_{p_b}$ which depends on 
-$θ_{p_b1},θ_{p_b2},θ_{p_b2}$. In this way our energy can be written as a
-function of $\a$:
+where $\mathbf{T}_b$ depends on $\theta _{b1},\theta _{b2},\theta _{b2}$ and $\mathbf{T}_{p_b}$ which depends on 
+$\theta _{p_b1},\theta _{p_b2},\theta _{p_b2}$. In this way our energy can be written as a
+function of $\mathbf{a}$:
 
 $$
-E(\x_b(\a)) = ‖\x_b(\a) - \q‖².
+E(\mathbf{x}_b(\mathbf{a})) = \| \mathbf{x}_b(\mathbf{a}) - \mathbf{q}\| ^2 .
 $$
 
 We can design arbitrarily complex energies to satisfy our interaction needs. In
 this assignment, we consider that there is a list of constrained end effectors
-$b = \{b₁,b₂,…,b_k\}$ and our objective is that all selected end effectors $b_i$
+$b = \{b_1 ,b_2 ,\ldots,b_k\}$ and our objective is that all selected end effectors $b_i$
 go to their prescribed locations (provided by the mouse-drag UI).
 using the simple squared distance measure above.
 
-So, over all choices of $\a$ we'd like to optimize:
+So, over all choices of $\mathbf{a}$ we'd like to optimize:
 
 $$
-\min_{\a} \quad
+\mathop{\text{min}}_{\mathbf{a}} \quad
 \underbrace{
-∑\limits_{i=1}\^k ‖\x_{b_i}(\a) - \hat{\x}_{b_i}‖²
-}_{E(\x_b (\a))}
+\Sigma \limits_{i=1}^k \| \mathbf{x}_{b_i}(\mathbf{a}) - \widehat{\mathbf{x}}_{b_i}\| ^2 
+}_{E(\mathbf{x}_b (\mathbf{a}))}
 $$
 
 <!--
@@ -313,14 +313,14 @@ First, for a certain constrained end effector $b_j$ we ask that it lies as close
 as possible to the [viewing
 ray](https://en.wikipedia.org/wiki/Ray_tracing_(graphics)) through the user's
 [mouse pointer](https://en.wikipedia.org/wiki/Pointer_(user_interface)). 
-We can measure the distance between some point $\x$ and the line passing
-through the camera/eye location $\e$ and the mouse location _unprojected_ onto
-its 3D position on the screen placed in the scene at $\m$ using:
+We can measure the distance between some point $\mathbf{x}$ and the line passing
+through the camera/eye location $\mathbf{e}$ and the mouse location _unprojected_ onto
+its 3D position on the screen placed in the scene at $\mathbf{m}$ using:
 $$
-E_\text{mouse}(\x) = \left|\left| (\x - \m) - \left((\x - \m)⋅\frac{\e-\m}{‖\e-\m‖}\right)\frac{\e-\m}{‖\e-\m‖}\right|\right|^2.
+E_\text{mouse}(\mathbf{x}) = \left|\left| (\mathbf{x} - \mathbf{m}) - \left((\mathbf{x} - \mathbf{m})⋅\frac{\mathbf{e}-\mathbf{m}}{\| \mathbf{e}-\mathbf{m}\| }\right)\frac{\mathbf{e}-\mathbf{m}}{\| \mathbf{e}-\mathbf{m}\| }\right|\right|^2.
 $$
-This formula can be simplified to a much simpler expression since $\m$ and $\e$
-do not depend on $\x$ (left to the reader/implementor).
+This formula can be simplified to a much simpler expression since $\mathbf{m}$ and $\mathbf{e}$
+do not depend on $\mathbf{x}$ (left to the reader/implementor).
 
 
 > **Question:** How would you _alternatively_ write this term by measuring
@@ -329,46 +329,46 @@ do not depend on $\x$ (left to the reader/implementor).
 > **Hint:** 📽
 >
 
-Second, for all of the other end effectors $b_i \left|\right. i≠j$, we will
-constrain their positions to their rest locations $\hat{\x}_{b_i}$, using the
+Second, for all of the other end effectors $b_i \left|\right. i\ne j$, we will
+constrain their positions to their rest locations $\widehat{\mathbf{x}}_{b_i}$, using the
 simple squared distance measure above.
 
 The goal of inverse kinematics is to minimize the sum of these energies over all
-choices of $\a$:
+choices of $\mathbf{a}$:
 
 $$
-\min_{\a} \quad
+\mathop{\text{min}}_{\mathbf{a}} \quad
 \underbrace{
-E_{\text{mouse}}(\x_{b_j}(\a)) + 
-∑\limits_{i≠j} ‖\x_{b_i}(\a) - \hat{\x}_{b_i}‖²
-}_{E(\x_b (\a))}
+E_{\text{mouse}}(\mathbf{x}_{b_j}(\mathbf{a})) + 
+\Sigma \limits_{i\ne j} \| \mathbf{x}_{b_i}(\mathbf{a}) - \widehat{\mathbf{x}}_{b_i}\| ^2 
+}_{E(\mathbf{x}_b (\mathbf{a}))}
 $$
 -->
 
 We will further constrain our problem by imposing
 [upper and lower bounds](https://en.wikipedia.org/wiki/Constrained_optimization#Inequality_constraints)
-on our angles $\a$. These correspond to joint limits. For example, the joint
+on our angles $\mathbf{a}$. These correspond to joint limits. For example, the joint
 limits of a hinge or elbow type joint may look like:
 $$
-0° ≤ θ₁ ≤ 0°, \quad 0° ≤ θ₂ ≤ 170°, \quad 0° ≤ θ₃ ≤ 0°.
+0^\circ  \le  \theta _1  \le  0^\circ , \quad 0^\circ  \le  \theta _2  \le  170^\circ , \quad 0^\circ  \le  \theta _3  \le  0^\circ .
 $$
 These would ensure that our joint cannot twist, and can only bend in one direction.
 
 So our full optimization problem becomes 
 
 $$
-\min\_{\a\^{\text{min}} ≤ \a ≤
-\a\^{\text{max}}}
-\quad E(\x_b(\a))
+\mathop{\text{min}}_{\mathbf{a}^{\text{min}} \le  \mathbf{a} \le 
+\mathbf{a}^{\text{max}}}
+\quad E(\mathbf{x}_b(\mathbf{a}))
 $$
-where $\a^{\text{min}}/\a^{\text{max}}$ stack lower/upper bounds correspondingly to $\a$.
+where $\mathbf{a}^{\text{min}}/\mathbf{a}^{\text{max}}$ stack lower/upper bounds correspondingly to $\mathbf{a}$.
 
 ![](images/ikea-lamp-ik.gif)
 
 This type of minimization is non-trivial. Our energy is a quadratic [sum of
-squares](https://en.wikipedia.org/wiki/Linear_least_squares) in $\x_b$, but
-$\x_b$ is a non-linear function of $\a$. In turn, this means to minimize $E$ as
-a function of $\a$ we must solve a [non-linear least
+squares](https://en.wikipedia.org/wiki/Linear_least_squares) in $\mathbf{x}_b$, but
+$\mathbf{x}_b$ is a non-linear function of $\mathbf{a}$. In turn, this means to minimize $E$ as
+a function of $\mathbf{a}$ we must solve a [non-linear least
 squares](https://en.wikipedia.org/wiki/Non-linear_least_squares) problem. 
 
 #### Projected Gradient Descent
@@ -385,45 +385,45 @@ want to get to the bottom of a canyon, look at the ground and walk in the
 direction that goes downhill.
 
 So, we iteratively take a step in the _negative_ gradient direction of our
-objective function $E(\x(\a))$:
+objective function $E(\mathbf{x}(\mathbf{a}))$:
 
 $$
-\a ← \a - σ \left(\frac{dE(\x(\a))}{d\a}\right)^T
+\mathbf{a} \Leftarrow  \mathbf{a} - \sigma  \left(\frac{dE(\mathbf{x}(\mathbf{a}))}{d\mathbf{a}}\right)^T
 $$
 
 Applying the [chain rule](https://en.wikipedia.org/wiki/Chain_rule), this
 iteration becomes
 
 $$
-\a ← \a - σ \left(\frac{d\x(\a)}{d\a}\right)^T\left(\frac{dE(\x)}{d\x}\right)
+\mathbf{a} \Leftarrow  \mathbf{a} - \sigma  \left(\frac{d\mathbf{x}(\mathbf{a})}{d\mathbf{a}}\right)^T\left(\frac{dE(\mathbf{x})}{d\mathbf{x}}\right)
 $$
 
-where $\frac{dE}{d\a} ∈ \R^{|\a|}$,
-$\frac{dE}{d\x} ∈ \R^{|\x|}$, and $\frac{d\x}{d\a} ∈ \R^{|\x| × |\a|}$
+where $\frac{dE}{d\mathbf{a}} \in  \mathbf{R}^{|\mathbf{a}|}$,
+$\frac{dE}{d\mathbf{x}} \in  \mathbf{R}^{|\mathbf{x}|}$, and $\frac{d\mathbf{x}}{d\mathbf{a}} \in  \mathbf{R}^{|\mathbf{x}| \times  |\mathbf{a}|}$
 
-The change in tip positions $\x$ with respect to joint angles $\a$ does not
+The change in tip positions $\mathbf{x}$ with respect to joint angles $\mathbf{a}$ does not
 depend on the choice of energy $E$. We call this matrix of changes the kinematic
-[Jacobian](https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant), $\J ∈
-\R^{|\x| × |\a|}$:
+[Jacobian](https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant), $\mathbf{J} \in 
+\mathbf{R}^{|\mathbf{x}| \times  |\mathbf{a}|}$:
 
 
 $$
-\J = \frac{d\x}{d\a}.
+\mathbf{J} = \frac{d\mathbf{x}}{d\mathbf{a}}.
 $$
 
-Written in terms of $\J$ our step becomes,
+Written in terms of $\mathbf{J}$ our step becomes,
 
 $$
-\a ← \a - σ \J^\transpose\left(\frac{dE(\x)}{d\x}\right)
+\mathbf{a} \Leftarrow  \mathbf{a} - \sigma  \mathbf{J}^{\mathsf T}\left(\frac{dE(\mathbf{x})}{d\mathbf{x}}\right)
 $$
 
-> **Question:** Can we take an arbitrarily large step $σ>>0$?
+> **Question:** Can we take an arbitrarily large step $\sigma >>0$?
 >
-> **Hint:** What if we just need to change $\a$ by a small, non-zero amount?
-> What would chooing $σ=1,000,000$ do to $\a$? What would that in turn do to
-> $E(\x(\a))$?
+> **Hint:** What if we just need to change $\mathbf{a}$ by a small, non-zero amount?
+> What would chooing $\sigma =1,000,000$ do to $\mathbf{a}$? What would that in turn do to
+> $E(\mathbf{x}(\mathbf{a}))$?
 
-For sufficiently small $σ$, each step will decrease the objective energy $E$.
+For sufficiently small $\sigma $, each step will decrease the objective energy $E$.
 
 If the gradient of $E$ becomes zero, then we're at a [stationary
 point](https://en.wikipedia.org/wiki/Stationary_point) and likely at a minimum.
@@ -432,72 +432,72 @@ To ensure that our bounds are obeyed, after each step we need to _project_ onto
 our constraints by snapping each value to its respective bound if necessary:
 
 $$
-\a\_i ← \max[\a\^\text{min}_i, \min[\a\^\text{max}\_i,\a\_i]].
+\mathbf{a}_i \Leftarrow  \max[\mathbf{a}^\text{min}_i, \mathop{\text{min}}[\mathbf{a}^\text{max}_i,\mathbf{a}_i]].
 $$
 
-We'll refer to this as a projection filter acting on the entire vector $\a$:
+We'll refer to this as a projection filter acting on the entire vector $\mathbf{a}$:
 
 $$
-\a ← \text{proj}(\a).
+\mathbf{a} \Leftarrow  \text{proj}(\mathbf{a}).
 $$
 
 
 > #### Newton's method
 > 
 > The local gradient of a function can be very different from the "best" descent
-> direction. The choice of $σ$ reflects how much we "trust" this direction.
-> Unfortunately, if $σ$ is too large our iterations may diverge. If $σ$ is too
+> direction. The choice of $\sigma $ reflects how much we "trust" this direction.
+> Unfortunately, if $\sigma $ is too large our iterations may diverge. If $\sigma $ is too
 > small, we will have to do many iterations.
 > 
 > In order to find a _better_ descent direction, let's assume we knew _more_ about
-> $E$. That is, suppose we also knew its second derivatives: $\frac{d²E}{d\x²}$. 
+> $E$. That is, suppose we also knew its second derivatives: $\frac{d^2 E}{d\mathbf{x}^2 }$. 
 > 
-> Given an initial guess $\x⁰$ we're looking to find a change $∆\x$ so that $E(\x⁰
-> + ∆\x)$ is a stationary point.
+> Given an initial guess $\mathbf{x}^0 $ we're looking to find a change $\Delta \mathbf{x}$ so that $E(\mathbf{x}^0 
+> + \Delta \mathbf{x})$ is a stationary point.
 > 
 > Starting with our equilibrium equation,
 > $$
-> \frac{dE(\x)}{d\x} = \0
+> \frac{dE(\mathbf{x})}{d\mathbf{x}} = \mathbf{0}
 > $$
 > 
-> we substitute in $x = \x⁰ + ∆\x$
+> we substitute in $x = \mathbf{x}^0  + \Delta \mathbf{x}$
 > 
 > $$
-> \frac{dE(\x⁰+∆\x)}{d∆\x} = \0
+> \frac{dE(\mathbf{x}^0 +\Delta \mathbf{x})}{d\Delta \mathbf{x}} = \mathbf{0}
 > $$
 > 
 > Plugging in a [Taylor series](https://en.wikipedia.org/wiki/Taylor_series)
 > expansion
 > 
 > $$
-> E(\x⁰+∆\x) \approx E(\x⁰) + \frac{d E(\x⁰+∆\x)}{d\x} ∆\x +
-> \frac{d²E(\x⁰+∆\x)}{d\x²}\frac{(∆\x)²}{2} + …$$
+> E(\mathbf{x}^0 +\Delta \mathbf{x}) \approx E(\mathbf{x}^0 ) + \frac{d E(\mathbf{x}^0 +\Delta \mathbf{x})}{d\mathbf{x}} \Delta \mathbf{x} +
+> \frac{d^2 E(\mathbf{x}^0 +\Delta \mathbf{x})}{d\mathbf{x}^2 }\frac{(\Delta \mathbf{x})^2 }{2} + \ldots$$
 > 
-> and dropping higher order terms ($…$), we get:
+> and dropping higher order terms ($\ldots$), we get:
 > 
 > $$
-> \frac{d}{d∆\x}(E(\x⁰) + \frac{d E(\x⁰+∆\x)}{d\x} ∆\x + \underbrace{\frac{d²E(\x⁰+∆\x)}{d\x²}}_\H\frac{(∆\x)²}{2}) = \0,
+> \frac{d}{d\Delta \mathbf{x}}(E(\mathbf{x}^0 ) + \frac{d E(\mathbf{x}^0 +\Delta \mathbf{x})}{d\mathbf{x}} \Delta \mathbf{x} + \underbrace{\frac{d^2 E(\mathbf{x}^0 +\Delta \mathbf{x})}{d\mathbf{x}^2 }}_\mathbf{H}\frac{(\Delta \mathbf{x})^2 }{2}) = \mathbf{0},
 > $$
-> where we call $\H ∈ \R^{|x| × |x|}$ the [Hessian
+> where we call $\mathbf{H} \in  \mathbf{R}^{|x| \times  |x|}$ the [Hessian
 > matrix](https://en.wikipedia.org/wiki/Hessian_matrix).  
 > 
-> Applying the differentiation by $∆\x$ we get a system of equations:
+> Applying the differentiation by $\Delta \mathbf{x}$ we get a system of equations:
 > 
 > $$
-> \frac{d E(\x⁰+∆\x)}{d\x} + \frac{d²E(\x⁰+∆\x)}{d\x²} ∆\x = \0.
+> \frac{d E(\mathbf{x}^0 +\Delta \mathbf{x})}{d\mathbf{x}} + \frac{d^2 E(\mathbf{x}^0 +\Delta \mathbf{x})}{d\mathbf{x}^2 } \Delta \mathbf{x} = \mathbf{0}.
 > $$
-> Solving for the change $∆x$ we get:
+> Solving for the change $\Delta x$ we get:
 > $$
-> ∆x = -\left.\H\right.^{-1} \frac{d E(\x⁰+∆\x)}{d\x}.
+> \Delta x = -\left.\mathbf{H}\right.^{-1} \frac{d E(\mathbf{x}^0 +\Delta \mathbf{x})}{d\mathbf{x}}.
 > $$
 > 
 > So a _raw_ Newton's method update would be:
 > 
 > $$
-> \x ← \x - \left.\H\right.^{-1} \frac{d E(\x⁰+∆\x)}{d\x}.
+> \mathbf{x} \Leftarrow  \mathbf{x} - \left.\mathbf{H}\right.^{-1} \frac{d E(\mathbf{x}^0 +\Delta \mathbf{x})}{d\mathbf{x}}.
 > $$
 > 
-> If our Taylor series approximation was perfect (no high order terms in $…$; in
+> If our Taylor series approximation was perfect (no high order terms in $\ldots$; in
 > otherwords $E$ was quadratic), then Newton's method would be perfect: a single
 > update immediately takes us to the minimum.
 > 
@@ -505,48 +505,48 @@ $$
 > 
 >  1. We built our step purely based on the equations for a stationary point.
 >     Nothing says we won't get sent toward a maximum or saddle-point. 
->  2. $\H$ is often difficult or expensive to compute.
->  4. $\H$ may be singular.
->  3. Inverting $\H$ (even if possible) is often slow.
+>  2. $\mathbf{H}$ is often difficult or expensive to compute.
+>  4. $\mathbf{H}$ may be singular.
+>  3. Inverting $\mathbf{H}$ (even if possible) is often slow.
 >  5. Our system is built off a local approximation of $E$ so the descent
 >     direction may _still_ point in the wrong direction.
 > 
 > Since we're approximating $E$ at every iteration anyway, we'll skirt many of
-> these issues by considering various approximations of the Hessian matrix $\H$.
-> We'll never actually compute $\H$.
+> these issues by considering various approximations of the Hessian matrix $\mathbf{H}$.
+> We'll never actually compute $\mathbf{H}$.
 > 
 > #### Gradient Descent _Revisited_
 > 
-> The simplest approximation of $\H$ is the identity matrix $\I$. Plugging this
+> The simplest approximation of $\mathbf{H}$ is the identity matrix $\mathbf{I}$. Plugging this
 > into our truncated Taylor series expansion above, our approximation would read:
 > 
 > $$
-> E(\x⁰) + \frac{d E(\x⁰+∆\x)}{d\x} ∆\x + \I \frac{(∆\x)²}{2}.
+> E(\mathbf{x}^0 ) + \frac{d E(\mathbf{x}^0 +\Delta \mathbf{x})}{d\mathbf{x}} \Delta \mathbf{x} + \mathbf{I} \frac{(\Delta \mathbf{x})^2 }{2}.
 > $$
 > 
 > and our step reduces to good ol' gradient descent:
 > 
 > $$
-> \x ← \x - \frac{d E(\x⁰+∆\x)}{d\x}.
+> \mathbf{x} \Leftarrow  \mathbf{x} - \frac{d E(\mathbf{x}^0 +\Delta \mathbf{x})}{d\mathbf{x}}.
 > $$
 > 
 > #### Gauss-Newton
 >
-> Given that we have already computed first derivatives in the Jacobian $\J
-> =\frac{d\x(\a)}{d\a}$, an even better approximation for Hessian $\H$ than the
-> identity $\I$ would be to use $\J^\transpose J$. The resulting update becomes:
+> Given that we have already computed first derivatives in the Jacobian $\mathbf{J}
+> =\frac{d\mathbf{x}(\mathbf{a})}{d\mathbf{a}}$, an even better approximation for Hessian $\mathbf{H}$ than the
+> identity $\mathbf{I}$ would be to use $\mathbf{J}^{\mathsf T} J$. The resulting update becomes:
 >
 > $$
-> \a ← \a + (\left.\J\right.^\transpose\J)^{-1} \left.\J\right.^\transpose \frac{dE(\x)}{d\x}
+> \mathbf{a} \Leftarrow  \mathbf{a} + (\left.\mathbf{J}\right.^{\mathsf T}\mathbf{J})^{-1} \left.\mathbf{J}\right.^{\mathsf T} \frac{dE(\mathbf{x})}{d\mathbf{x}}
 > $$
 >
-> Unlike $\H$, $\J^\transpose\J$ is easy to compute if we're already computing
-> $\J$. It is guaranteed to be [positive
+> Unlike $\mathbf{H}$, $\mathbf{J}^{\mathsf T}\mathbf{J}$ is easy to compute if we're already computing
+> $\mathbf{J}$. It is guaranteed to be [positive
 > semi-definite](https://en.wikipedia.org/wiki/Positive-definite_matrix) and it
 > is possible to invert or reliably
-> [pseudo-invert](https://en.wikipedia.org/wiki/Moore–Penrose_inverse) ($\J^+$
-> acting in place of $(\left.\J\right.^\transpose\J)^{-1}
-> \left.\J\right.^\transpose$).
+> [pseudo-invert](https://en.wikipedia.org/wiki/Moore–Penrose_inverse) ($\mathbf{J}^+$
+> acting in place of $(\left.\mathbf{J}\right.^{\mathsf T}\mathbf{J})^{-1}
+> \left.\mathbf{J}\right.^{\mathsf T}$).
 >
 > The descent directions are often significantly better than gradient descent.
 > As a result this method, called Gauss-Newton, requires many fewer iterations
@@ -556,37 +556,37 @@ $$
 > kinematics, this Gauss-Newton method performs poorly if the desired positions
 > are not reachable: over extending an arm. First the solution locks in place
 > and then diverges. This happens when our Hessian approximation
-> $\J^\transpose\J$ starts misbehaving.
+> $\mathbf{J}^{\mathsf T}\mathbf{J}$ starts misbehaving.
 >
 > A good fix is to blend between the gradient descent and Gauss-Newton search
-> directions. That is blend between $\I$ and $\J^\transpose\J$. This is called
+> directions. That is blend between $\mathbf{I}$ and $\mathbf{J}^{\mathsf T}\mathbf{J}$. This is called
 > the [Levenberg-Marquadt
 > algorithm](https://en.wikipedia.org/wiki/Levenberg–Marquardt_algorithm).
 
 #### Finite Differencing
 
-But how do we compute the kinematic Jacobian $\J$? Since each entry in $\x$ is
+But how do we compute the kinematic Jacobian $\mathbf{J}$? Since each entry in $\mathbf{x}$ is
 the result of forward kinematics and not just a math expression, it's not
 immediately obvious how to determine its derivatives. However, a derivative is
 nothing more than the limit of a small change output divided by a small change
 in the input:
 
 $$
-\J_{i,j} = \lim_{h → 0} \frac{\x_i(\a+h δ_j) - \x_i(\a)}{h},
+\mathbf{J}_{i,j} = \lim_{h \Rightarrow  0} \frac{\mathbf{x}_i(\mathbf{a}+h \delta _j) - \mathbf{x}_i(\mathbf{a})}{h},
 $$
-where $δ_j ∈ \R^{|a|}$ is a vector of zeros except a 1 at location $j$.
+where $\delta _j \in  \mathbf{R}^{|a|}$ is a vector of zeros except a 1 at location $j$.
 
 We can numerically approximate this limit by fixing $h$ to a small value (e.g.,
 $h=10^{-7}$). This is called the [finite
 difference](https://en.wikipedia.org/wiki/Finite_difference) approximation:
 $$
-\J_{i,j} \approx  \frac{\x_i(\a+h δ_j) - \x_i(\a)}{h}.
+\mathbf{J}_{i,j} \approx  \frac{\mathbf{x}_i(\mathbf{a}+h \delta _j) - \mathbf{x}_i(\mathbf{a})}{h}.
 $$
 
-For inverse kinematics, we will need to compute $\x_i(\a+h δ_j)$ once for each
+For inverse kinematics, we will need to compute $\mathbf{x}_i(\mathbf{a}+h \delta _j)$ once for each
 Euler angle of each bone $j$. This requires $3m$ calls to our forward kinematics
 function (each with a slightly different input), which is in turn $O(m)$. This
-makes the total cost $O(m²)$ to fill in our $\J$ matrix.
+makes the total cost $O(m^2 )$ to fill in our $\mathbf{J}$ matrix.
 
 
 >
@@ -598,7 +598,7 @@ makes the total cost $O(m²)$ to fill in our $\J$ matrix.
 > leave in all the sub-routine calls, if statements, for loops, etc.), we could
 > use [automatic
 > differentiation](https://en.wikipedia.org/wiki/Automatic_differentiation) to
-> compute $\J$.
+> compute $\mathbf{J}$.
 >
 > The are two extremes when it comes to autodiff: forward mode and backward
 > mode. 
@@ -606,45 +606,45 @@ makes the total cost $O(m²)$ to fill in our $\J$ matrix.
 > **Forward mode** works like finite differencing, except the perturbation to
 > the differentiation variable is symbolic and derivatives are tracked through
 > each basic operation (`+`,`-`,`sin`,etc.): the total computational cost to
-> construct $\J$ is again $O(m²)$.
+> construct $\mathbf{J}$ is again $O(m^2 )$.
 >
 > **Backward mode** works by pushing each function call and basic operation onto
 > a list.  Derivatives for all variables are then computed as we pop backward
 > through the evaluation: identical to how we read right-to-left on our
 > recursive kinematics formula. This means we compute derivatives with respect
-> to all variables $\a$ in a single _backwards_ evaluation. The total cost is
-> only $O(m)$ to fill $\J$. 
+> to all variables $\mathbf{a}$ in a single _backwards_ evaluation. The total cost is
+> only $O(m)$ to fill $\mathbf{J}$. 
 >
 
 #### Line Search
 
 Whether we're using gradient descent, Newton's method or Gauss-Newton, we a
 generally _attempting_ improving our guess by iteratively moving in a descent
-direction $∆\a$, followed by projecting onto constraints:
+direction $\Delta \mathbf{a}$, followed by projecting onto constraints:
 
 $$
-\a ← \text{proj}(\a + ∆\a).
+\mathbf{a} \Leftarrow  \text{proj}(\mathbf{a} + \Delta \mathbf{a}).
 $$
 
 Despite our best efforts, this step is not guaranteed to actually decrease
-our energy $E$. We can think of the descent _direction_ $∆\a$ as defining a line (or really
-a _ray_) and we'd like to find a positive amount $σ$ to move along this line that actually
+our energy $E$. We can think of the descent _direction_ $\Delta \mathbf{a}$ as defining a line (or really
+a _ray_) and we'd like to find a positive amount $\sigma $ to move along this line that actually
 does decrease the energy:
 
 $$
-E(\text{proj}(\a + σ ∆\a)) < E(\a).
+E(\text{proj}(\mathbf{a} + \sigma  \Delta \mathbf{a})) < E(\mathbf{a}).
 $$
 
-While there exists an optimal step $σ$, we don't want to spend too long finding
+While there exists an optimal step $\sigma $, we don't want to spend too long finding
 it as we would be better off spending our computational efforts improving the
-descent _direction_ for the next step. So, starting with a large value $σ$
-(e.g., 10,000), we decrease $σ$ by a constant factor (e.g., $½$) until our
+descent _direction_ for the next step. So, starting with a large value $\sigma $
+(e.g., 10,000), we decrease $\sigma $ by a constant factor (e.g., $\frac12 $) until our
 inequality passes.
 
 Depending on the configuration, it may or may not be possible to exactly satisfy
 the constraints (i.e., $E = 0$). But after many iterations, the solution should
 converge to a [local minimum](https://en.wikipedia.org/wiki/Maxima_and_minima)
-(i.e., $E>0$, but $dE/d\a = 0$). In our assignment, a thin line will appear if
+(i.e., $E>0$, but $dE/d\mathbf{a} = 0$). In our assignment, a thin line will appear if
 the user-given constraint is not coincident with the end-effector tip position.
 
 ![](images/knight-dab.gif)
@@ -664,7 +664,7 @@ To approximate this smooth blending quickly on the computer, we begin with a 3D
 triangle mesh in its "rest" position. The "rest bones" are embedded inside of
 this model. Each vertex $i$ of the mesh is assigned a weight $w_{i,j}$ for each
 bone $j$ corresonding to how much it is "attached" to that bone on a scale of 0%
-to 100%. Generally, if the rest position of the vertex $\hat{\v}_i$ is nearer to
+to 100%. Generally, if the rest position of the vertex $\widehat{\mathbf{v}}_i$ is nearer to
 a bone $j$ then its weight $w_{i,j}$ will be larger. A vertex in the middle of
 the elbow may have  a weight of 50% for the upper arm and 50% the forearm and
 0% for all other bones (toes, fingers, legs, spine, etc.).
@@ -674,16 +674,16 @@ piecewise-constant weights lead to a piece-wise rigid deformation.
 
 ![](images/beast-weights.gif)
 
-The "pose" position $\v_i$ of this vertex $i$ will be computed as a weighted
-average or linear combination of each bone's pose transformation $\T_j$ applied
-to the vertex's rest position $\hat{\v}_i$:
+The "pose" position $\mathbf{v}_i$ of this vertex $i$ will be computed as a weighted
+average or linear combination of each bone's pose transformation $\mathbf{T}_j$ applied
+to the vertex's rest position $\widehat{\mathbf{v}}_i$:
 
 $$
-\v_i = 
-\sum\limits\^{m}_{j=1}
+\mathbf{v}_i = 
+\sum\limits^{m}_{j=1}
 w_{i,j}
-\T_j
-\left(\begin{array}{c}\hat{\v}_i\\\\1\end{array}\right).
+\mathbf{T}_j
+\left(\begin{array}{c}\widehat{\mathbf{v}}_i\\\\1\end{array}\right).
 $$
 
 > **Question:** What happens to per-vertex normals after applying a skinning
@@ -697,9 +697,9 @@ these by carefully painting (yes, painting) weight functions and position the
 theoretical: most notably problems that occur by averaging
 rotations as matrices. 
 
-> **Question:** What transformation matrix do you get if you compute: $½ \Rot_x(90°) + ½ \Rot_x(-90°)$?
+> **Question:** What transformation matrix do you get if you compute: $\frac12  \mathbf{R}_x(90^\circ ) + \frac12  \mathbf{R}_x(-90^\circ )$?
 >
-> **Hint:** It's not $\Rot_x(0°)$.
+> **Hint:** It's not $\mathbf{R}_x(0^\circ )$.
 
 ## Tasks
 
