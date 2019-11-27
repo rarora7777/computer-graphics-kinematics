@@ -80,8 +80,8 @@ use the convention that the "canonical tail" (the origin $(0,0,0)$) is mapped to
 the "rest tail" inside the model. This means that the _translation_ part of the
 matrix $\widehat{\mathbf{T}}$ is simply the tail position, $\widehat{\mathbf{s}}\in \mathbf{R}^3$:
 $$
-\widehat{\mathbf{s}} = \widehat{\mathbf{T}} \left(\begin{array}{c}0\\\\mathbf{0}\\\\mathbf{0}\\\\1\end{array}\right) =
-\widehat{\mathbf{R}} \left(\begin{array}{c}0\\\\mathbf{0}\\\\mathbf{0}\end{array}\right) + \widehat{\mathbf{t}} 1 = \widehat{\mathbf{t}}.
+\widehat{\mathbf{s}} = \widehat{\mathbf{T}} \left(\begin{array}{c}0\\\\0\\\\0\\\\1\end{array}\right) =
+\widehat{\mathbf{R}} \left(\begin{array}{c}0\\\\0\\\\0\end{array}\right) + \widehat{\mathbf{t}} 1 = \widehat{\mathbf{t}}.
 $$
 
 The bone's
@@ -89,8 +89,8 @@ rotation is chosen so that the "canonical tip" $(\ell,0,0)$ maps to the "rest
 tip" $\widehat{\mathbf{d}} \in  \mathbf{R}^3 $:
 $$
 \widehat{\mathbf{d}} = 
-\widehat{\mathbf{T}} \left(\begin{array}{c}\ell\\\\mathbf{0}\\\\mathbf{0}\\\\1\end{array}\right) =
-\widehat{\mathbf{R}}\left(\begin{array}{c}\ell\\\\mathbf{0}\\\\mathbf{0}\end{array}\right) + \widehat{\mathbf{t}}.
+\widehat{\mathbf{T}} \left(\begin{array}{c}\ell\\\\0\\\\0\\\\1\end{array}\right) =
+\widehat{\mathbf{R}}\left(\begin{array}{c}\ell\\\\0\\\\0\end{array}\right) + \widehat{\mathbf{t}}.
 $$
 
 Typically the "rest tail" of is coincident with the "rest tip" of its
@@ -153,7 +153,7 @@ applying our parent's relative transformation, and our grandparent's and so on:
 $$
 \mathbf{T}_i = \mathbf{T}_{p_i} 
 \left(\begin{array}{c} \widehat{\mathbf{T}}_i \\\\ 0\ 0\ 0 \ 1\end{array}\right)
-\left(\begin{array}{cccc} \overline{\mathbf{R}}_i      & \begin{array}{c}0\\\\mathbf{0}\\\\mathbf{0}\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
+\left(\begin{array}{cccc} \overline{\mathbf{R}}_i      & \begin{array}{c}0\\\\0\\\\0\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
 \left(\begin{array}{c} \widehat{\mathbf{T}}_i \\\\ 0\ 0\ 0 \ 1\end{array}\right)^{-1}
 $$
 
@@ -184,9 +184,9 @@ $$
 = 
 \mathbf{T}_{p_i} 
 \widehat{\mathbf{T}}_i
-\left(\begin{array}{cccc} \mathbf{R}_x(\theta _{i3})      & \begin{array}{c}0\\\\mathbf{0}\\\\mathbf{0}\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
-\left(\begin{array}{cccc} \mathbf{R}_z(\theta _{i2})      & \begin{array}{c}0\\\\mathbf{0}\\\\mathbf{0}\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
-\left(\begin{array}{cccc} \mathbf{R}_x(\theta _{i1})      & \begin{array}{c}0\\\\mathbf{0}\\\\mathbf{0}\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
+\left(\begin{array}{cccc} \mathbf{R}_x(\theta _{i3})      & \begin{array}{c}0\\\\0\\\\0\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
+\left(\begin{array}{cccc} \mathbf{R}_z(\theta _{i2})      & \begin{array}{c}0\\\\0\\\\0\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
+\left(\begin{array}{cccc} \mathbf{R}_x(\theta _{i1})      & \begin{array}{c}0\\\\0\\\\0\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
 \left.\widehat{\mathbf{T}}_i\right.^{-1}
 $$
 where the matrix $\mathbf{R}_w(\varphi ) \in  \mathbf{R}^{3\times 3}$ is the rotation by $\varphi $ degrees around
