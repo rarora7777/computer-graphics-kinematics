@@ -152,6 +152,7 @@ sed -i 's/≤/\\le /g' $1
 sed -i 's/×/\\times /g' $1
 sed -i 's/…/\\ldots/g' $1
 sed -i 's/…/\\ldots/g' $1
+sed -i 's/⋅/\\cdot/g' $1
 #sed -i 's///g' $1
 
 # Alec's escaped chars

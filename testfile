@@ -1,0 +1,6 @@
+
+$$\tilde{E}(\p) = \\\\
+\frac{k}{2} \mathop\text{tr}\left((\A \p - \d)^\top (\A \p - \d)\right) + 
+\tr{
+\left(\p - 2\p\^{t} + \p\^{t-∆t}\right)^\top \M \left(\p - 2\p\^{t} + \p\^{t-∆t}\right)
+} 

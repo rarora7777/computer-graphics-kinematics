@@ -317,7 +317,7 @@ We can measure the distance between some point $\mathbf{x}$ and the line passing
 through the camera/eye location $\mathbf{e}$ and the mouse location _unprojected_ onto
 its 3D position on the screen placed in the scene at $\mathbf{m}$ using:
 $$
-E_\text{mouse}(\mathbf{x}) = \left|\left| (\mathbf{x} - \mathbf{m}) - \left((\mathbf{x} - \mathbf{m})⋅\frac{\mathbf{e}-\mathbf{m}}{\| \mathbf{e}-\mathbf{m}\| }\right)\frac{\mathbf{e}-\mathbf{m}}{\| \mathbf{e}-\mathbf{m}\| }\right|\right|^2.
+E_\text{mouse}(\mathbf{x}) = \left|\left| (\mathbf{x} - \mathbf{m}) - \left((\mathbf{x} - \mathbf{m})\cdot\frac{\mathbf{e}-\mathbf{m}}{\| \mathbf{e}-\mathbf{m}\| }\right)\frac{\mathbf{e}-\mathbf{m}}{\| \mathbf{e}-\mathbf{m}\| }\right|\right|^2.
 $$
 This formula can be simplified to a much simpler expression since $\mathbf{m}$ and $\mathbf{e}$
 do not depend on $\mathbf{x}$ (left to the reader/implementor).
