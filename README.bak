@@ -189,6 +189,7 @@ $$
 \left(\begin{array}{cccc} \Rot_x(θ_{i1})      & \begin{array}{c}0\\\\0\\\\0\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
 \left.\hat{\T}_i\right.^{-1}
 $$
+
 where the matrix $\Rot_w(φ) ∈ \R^{3×3}$ is the rotation by $φ$ degrees around
 the $w$-axis.
 
@@ -249,6 +250,7 @@ the finger and where we want it to be.
 
 Stated mathematically, for a skeleton with $m$ bones, if we create a vector
 $\a ∈ \R^{3m}$ stacking all the Euler angles of each bone vertically:
+
 $$\a = \left(\begin{array}{c}
 θ_{11} \\\\
 θ_{12} \\\\
@@ -283,6 +285,7 @@ relative rotations:
 $$
 \x_b(\a) = \T_b \hat{\d}_b
 $$
+
 where $\T_b$ depends on $θ_{b1},θ_{b2},θ_{b2}$ and $\T_{p_b}$ which depends on 
 $θ_{p_b1},θ_{p_b2},θ_{p_b2}$. In this way our energy can be written as a
 function of $\a$:
@@ -316,9 +319,11 @@ ray](https://en.wikipedia.org/wiki/Ray_tracing_(graphics)) through the user's
 We can measure the distance between some point $\x$ and the line passing
 through the camera/eye location $\e$ and the mouse location _unprojected_ onto
 its 3D position on the screen placed in the scene at $\m$ using:
+
 $$
 E_\text{mouse}(\x) = \left|\left| (\x - \m) - \left((\x - \m)⋅\frac{\e-\m}{‖\e-\m‖}\right)\frac{\e-\m}{‖\e-\m‖}\right|\right|^2.
 $$
+
 This formula can be simplified to a much simpler expression since $\m$ and $\e$
 do not depend on $\x$ (left to the reader/implementor).
 
@@ -349,9 +354,11 @@ We will further constrain our problem by imposing
 [upper and lower bounds](https://en.wikipedia.org/wiki/Constrained_optimization#Inequality_constraints)
 on our angles $\a$. These correspond to joint limits. For example, the joint
 limits of a hinge or elbow type joint may look like:
+
 $$
 0° ≤ θ₁ ≤ 0°, \quad 0° ≤ θ₂ ≤ 170°, \quad 0° ≤ θ₃ ≤ 0°.
 $$
+
 These would ensure that our joint cannot twist, and can only bend in one direction.
 
 So our full optimization problem becomes 
@@ -361,6 +368,7 @@ $$
 \a\^{\text{max}}}
 \quad E(\x_b(\a))
 $$
+
 where $\a^{\text{min}}/\a^{\text{max}}$ stack lower/upper bounds correspondingly to $\a$.
 
 ![](images/ikea-lamp-ik.gif)
@@ -478,6 +486,7 @@ $$
 > $$
 > \frac{d}{d∆\x}(E(\x⁰) + \frac{d E(\x⁰+∆\x)}{d\x} ∆\x + \underbrace{\frac{d²E(\x⁰+∆\x)}{d\x²}}_\H\frac{(∆\x)²}{2}) = \0,
 > $$
+> 
 > where we call $\H ∈ \R^{|x| × |x|}$ the [Hessian
 > matrix](https://en.wikipedia.org/wiki/Hessian_matrix).  
 > 
@@ -574,11 +583,13 @@ in the input:
 $$
 \J_{i,j} = \lim_{h → 0} \frac{\x_i(\a+h δ_j) - \x_i(\a)}{h},
 $$
+
 where $δ_j ∈ \R^{|a|}$ is a vector of zeros except a 1 at location $j$.
 
 We can numerically approximate this limit by fixing $h$ to a small value (e.g.,
 $h=10^{-7}$). This is called the [finite
 difference](https://en.wikipedia.org/wiki/Finite_difference) approximation:
+
 $$
 \J_{i,j} \approx  \frac{\x_i(\a+h δ_j) - \x_i(\a)}{h}.
 $$

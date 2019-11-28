@@ -162,6 +162,7 @@ is conducted in its canonical frame and then _brought_ through the rest frame
 through a change of coordinates:
 
 <p align="center"><img src="svgs/1019920fa305d295d1cee633b09ed6c6.svg?invert_in_darkmode&sanitize=true" align=middle width=558.62235pt height=157.809795pt/></p>
+
 where the matrix <img src="svgs/900aa2972f345f0258b2e6a8b61c3a49.svg?invert_in_darkmode&sanitize=true" align=middle width=106.006395pt height=26.76201pt/> is the rotation by <img src="svgs/0e62162a970fbed24c43cd8e91daf0d1.svg?invert_in_darkmode&sanitize=true" align=middle width=10.753545pt height=14.15535pt/> degrees around
 the <img src="svgs/31fae8b8b78ebe01cbfbe2fe53832624.svg?invert_in_darkmode&sanitize=true" align=middle width=12.21099pt height=14.15535pt/>-axis.
 
@@ -222,6 +223,7 @@ the finger and where we want it to be.
 
 Stated mathematically, for a skeleton with <img src="svgs/0e51a2dede42189d77627c4d742822c3.svg?invert_in_darkmode&sanitize=true" align=middle width=14.43321pt height=14.15535pt/> bones, if we create a vector
 <img src="svgs/b1464b5666a93e4a68ce563fc82f5e56.svg?invert_in_darkmode&sanitize=true" align=middle width=61.67601pt height=26.76201pt/> stacking all the Euler angles of each bone vertically:
+
 <p align="center"><img src="svgs/967f000ac0f36a2f4433040aee371cdd.svg?invert_in_darkmode&sanitize=true" align=middle width=103.068735pt height=384.6612pt/></p>
 
 then we can ask for the best vector of angles <img src="svgs/39fabd4269f3ed42d410d3f60e118a32.svg?invert_in_darkmode&sanitize=true" align=middle width=8.1735885pt height=22.83138pt/>. Best-ness must be quantified
@@ -240,6 +242,7 @@ Using forward kinematics, we can express <img src="svgs/c6fb89b60f91828eac09b587
 relative rotations: 
 
 <p align="center"><img src="svgs/201fcb69625a74169bc67a2939ef5270.svg?invert_in_darkmode&sanitize=true" align=middle width=96.50883pt height=20.31975pt/></p>
+
 where <img src="svgs/78d94e23f6db01c9f2c6d425303520f7.svg?invert_in_darkmode&sanitize=true" align=middle width=18.93144pt height=22.55715pt/> depends on <img src="svgs/1ef545c57ac92de4f0e08ab1d8cdf759.svg?invert_in_darkmode&sanitize=true" align=middle width=76.406385pt height=22.83138pt/> and <img src="svgs/97f4017857fdbd5567a3cf5d2503cf92.svg?invert_in_darkmode&sanitize=true" align=middle width=25.132635pt height=22.55715pt/> which depends on 
 <img src="svgs/947c63a44a9df8f47a88ab35f30fea5a.svg?invert_in_darkmode&sanitize=true" align=middle width=97.475565pt height=22.83138pt/>. In this way our energy can be written as a
 function of <img src="svgs/41f28962986ecdd9c1dc2af8b83fef84.svg?invert_in_darkmode&sanitize=true" align=middle width=9.18951pt height=14.61207pt/>:
@@ -266,7 +269,9 @@ ray](https://en.wikipedia.org/wiki/Ray_tracing_(graphics)) through the user's
 We can measure the distance between some point <img src="svgs/b0ea07dc5c00127344a1cad40467b8de.svg?invert_in_darkmode&sanitize=true" align=middle width=9.97722pt height=14.61207pt/> and the line passing
 through the camera/eye location <img src="svgs/b193e42944e06637195ea4bd2f3acdde.svg?invert_in_darkmode&sanitize=true" align=middle width=8.66448pt height=14.61207pt/> and the mouse location _unprojected_ onto
 its 3D position on the screen placed in the scene at <img src="svgs/273457f251a6f8920e7b6c485c28b74f.svg?invert_in_darkmode&sanitize=true" align=middle width=15.753375pt height=14.61207pt/> using:
+
 <p align="center"><img src="svgs/4f83135b48b04a5c519cd66aaceaf3f2.svg?invert_in_darkmode&sanitize=true" align=middle width=435.80295pt height=42.804135pt/></p>
+
 This formula can be simplified to a much simpler expression since <img src="svgs/273457f251a6f8920e7b6c485c28b74f.svg?invert_in_darkmode&sanitize=true" align=middle width=15.753375pt height=14.61207pt/> and <img src="svgs/b193e42944e06637195ea4bd2f3acdde.svg?invert_in_darkmode&sanitize=true" align=middle width=8.66448pt height=14.61207pt/>
 do not depend on <img src="svgs/b0ea07dc5c00127344a1cad40467b8de.svg?invert_in_darkmode&sanitize=true" align=middle width=9.97722pt height=14.61207pt/> (left to the reader/implementor).
 
@@ -291,12 +296,15 @@ We will further constrain our problem by imposing
 [upper and lower bounds](https://en.wikipedia.org/wiki/Constrained_optimization#Inequality_constraints)
 on our angles <img src="svgs/41f28962986ecdd9c1dc2af8b83fef84.svg?invert_in_darkmode&sanitize=true" align=middle width=9.18951pt height=14.61207pt/>. These correspond to joint limits. For example, the joint
 limits of a hinge or elbow type joint may look like:
+
 <p align="center"><img src="svgs/651e1c92c0989b3bb2725464488cc71a.svg?invert_in_darkmode&sanitize=true" align=middle width=339.93135pt height=15.3375255pt/></p>
+
 These would ensure that our joint cannot twist, and can only bend in one direction.
 
 So our full optimization problem becomes 
 
 <p align="center"><img src="svgs/d17f5179af2466ad0b3c92348acf53b3.svg?invert_in_darkmode&sanitize=true" align=middle width=166.50645pt height=26.077425pt/></p>
+
 where <img src="svgs/86fa7eae344632b6bdf796fb8b8bc82b.svg?invert_in_darkmode&sanitize=true" align=middle width=73.459155pt height=27.41046pt/> stack lower/upper bounds correspondingly to <img src="svgs/41f28962986ecdd9c1dc2af8b83fef84.svg?invert_in_darkmode&sanitize=true" align=middle width=9.18951pt height=14.61207pt/>.
 
 ![](images/ikea-lamp-ik.gif)
@@ -392,6 +400,7 @@ We'll refer to this as a projection filter acting on the entire vector <img src=
 > and dropping higher order terms (<img src="svgs/e378afcd7cae11e7306c61a9c35bf6cf.svg?invert_in_darkmode&sanitize=true" align=middle width=19.178115pt height=14.15535pt/>), we get:
 > 
 > <p align="center"><img src="svgs/5a6ef2f98097ac74dd773860ce493761.svg?invert_in_darkmode&sanitize=true" align=middle width=481.72245pt height=58.24764pt/></p>
+> 
 > where we call <img src="svgs/28f45976002fbde24198bb5d0102da54.svg?invert_in_darkmode&sanitize=true" align=middle width=89.86296pt height=29.19114pt/> the [Hessian
 > matrix](https://en.wikipedia.org/wiki/Hessian_matrix).  
 > 
@@ -472,11 +481,13 @@ nothing more than the limit of a small change output divided by a small change
 in the input:
 
 <p align="center"><img src="svgs/f5b3db30acc4b16dff9a92781a5e219f.svg?invert_in_darkmode&sanitize=true" align=middle width=224.51055pt height=34.725405pt/></p>
+
 where <img src="svgs/165578d0076311fa849ec1a5bcc4c619.svg?invert_in_darkmode&sanitize=true" align=middle width=63.44019pt height=29.19114pt/> is a vector of zeros except a 1 at location <img src="svgs/36b5afebdba34564d884d347484ac0c7.svg?invert_in_darkmode&sanitize=true" align=middle width=7.710483pt height=21.68331pt/>.
 
 We can numerically approximate this limit by fixing <img src="svgs/2ad9d098b937e46f9f58968551adac57.svg?invert_in_darkmode&sanitize=true" align=middle width=9.471165pt height=22.83138pt/> to a small value (e.g.,
 <img src="svgs/09fb33d7908fa6a6ba9ff8defb106e4e.svg?invert_in_darkmode&sanitize=true" align=middle width=64.653765pt height=26.76201pt/>). This is called the [finite
 difference](https://en.wikipedia.org/wiki/Finite_difference) approximation:
+
 <p align="center"><img src="svgs/6e43cbc57ea75c217e8e14d4ef76d2b9.svg?invert_in_darkmode&sanitize=true" align=middle width=194.41785pt height=34.725405pt/></p>
 
 For inverse kinematics, we will need to compute <img src="svgs/d430f21b99301012e11e0d7ab4fe7076.svg?invert_in_darkmode&sanitize=true" align=middle width=81.219435pt height=24.6576pt/> once for each

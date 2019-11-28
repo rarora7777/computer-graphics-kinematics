@@ -189,6 +189,7 @@ $$
 \left(\begin{array}{cccc} \mathbf{R}_x(\theta _{i1})      & \begin{array}{c}0\\\\{0}\\\\{0}\\\\\end{array} \\\\ 0\ 0\ 0 & 1\end{array}\right)
 \left.\widehat{\mathbf{T}}_i\right.^{-1}
 $$
+
 where the matrix $\mathbf{R}_w(\varphi ) \in  \mathbf{R}^{3\times 3}$ is the rotation by $\varphi $ degrees around
 the $w$-axis.
 
@@ -249,6 +250,7 @@ the finger and where we want it to be.
 
 Stated mathematically, for a skeleton with $m$ bones, if we create a vector
 $\mathbf{a} \in  \mathbf{R}^{3m}$ stacking all the Euler angles of each bone vertically:
+
 $$\mathbf{a} = \left(\begin{array}{c}
 \theta _{11} \\\\
 \theta _{12} \\\\
@@ -283,6 +285,7 @@ relative rotations:
 $$
 \mathbf{x}_b(\mathbf{a}) = \mathbf{T}_b \widehat{\mathbf{d}}_b
 $$
+
 where $\mathbf{T}_b$ depends on $\theta _{b1},\theta _{b2},\theta _{b2}$ and $\mathbf{T}_{p_b}$ which depends on 
 $\theta _{p_b1},\theta _{p_b2},\theta _{p_b2}$. In this way our energy can be written as a
 function of $\mathbf{a}$:
@@ -316,9 +319,11 @@ ray](https://en.wikipedia.org/wiki/Ray_tracing_(graphics)) through the user's
 We can measure the distance between some point $\mathbf{x}$ and the line passing
 through the camera/eye location $\mathbf{e}$ and the mouse location _unprojected_ onto
 its 3D position on the screen placed in the scene at $\mathbf{m}$ using:
+
 $$
 E_\text{mouse}(\mathbf{x}) = \left|\left| (\mathbf{x} - \mathbf{m}) - \left((\mathbf{x} - \mathbf{m})\cdot\frac{\mathbf{e}-\mathbf{m}}{\| \mathbf{e}-\mathbf{m}\| }\right)\frac{\mathbf{e}-\mathbf{m}}{\| \mathbf{e}-\mathbf{m}\| }\right|\right|^2.
 $$
+
 This formula can be simplified to a much simpler expression since $\mathbf{m}$ and $\mathbf{e}$
 do not depend on $\mathbf{x}$ (left to the reader/implementor).
 
@@ -349,9 +354,11 @@ We will further constrain our problem by imposing
 [upper and lower bounds](https://en.wikipedia.org/wiki/Constrained_optimization#Inequality_constraints)
 on our angles $\mathbf{a}$. These correspond to joint limits. For example, the joint
 limits of a hinge or elbow type joint may look like:
+
 $$
 0^\circ  \le  \theta _1  \le  0^\circ , \quad 0^\circ  \le  \theta _2  \le  170^\circ , \quad 0^\circ  \le  \theta _3  \le  0^\circ .
 $$
+
 These would ensure that our joint cannot twist, and can only bend in one direction.
 
 So our full optimization problem becomes 
@@ -361,6 +368,7 @@ $$
 \mathbf{a}^{\text{max}}}
 \quad E(\mathbf{x}_b(\mathbf{a}))
 $$
+
 where $\mathbf{a}^{\text{min}}/\mathbf{a}^{\text{max}}$ stack lower/upper bounds correspondingly to $\mathbf{a}$.
 
 ![](images/ikea-lamp-ik.gif)
@@ -478,6 +486,7 @@ $$
 > $$
 > \frac{d}{d\Delta \mathbf{x}}(E(\mathbf{x}^0 ) + \frac{d E(\mathbf{x}^0 +\Delta \mathbf{x})}{d\mathbf{x}} \Delta \mathbf{x} + \underbrace{\frac{d^2 E(\mathbf{x}^0 +\Delta \mathbf{x})}{d\mathbf{x}^2 }}_\mathbf{H}\frac{(\Delta \mathbf{x})^2 }{2}) = \mathbf{0},
 > $$
+> 
 > where we call $\mathbf{H} \in  \mathbf{R}^{|x| \times  |x|}$ the [Hessian
 > matrix](https://en.wikipedia.org/wiki/Hessian_matrix).  
 > 
@@ -574,11 +583,13 @@ in the input:
 $$
 \mathbf{J}_{i,j} = \lim_{h \Rightarrow  0} \frac{\mathbf{x}_i(\mathbf{a}+h \delta _j) - \mathbf{x}_i(\mathbf{a})}{h},
 $$
+
 where $\delta _j \in  \mathbf{R}^{|a|}$ is a vector of zeros except a 1 at location $j$.
 
 We can numerically approximate this limit by fixing $h$ to a small value (e.g.,
 $h=10^{-7}$). This is called the [finite
 difference](https://en.wikipedia.org/wiki/Finite_difference) approximation:
+
 $$
 \mathbf{J}_{i,j} \approx  \frac{\mathbf{x}_i(\mathbf{a}+h \delta _j) - \mathbf{x}_i(\mathbf{a})}{h}.
 $$
