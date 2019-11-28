@@ -78,12 +78,12 @@ We
 use the convention that the "canonical tail" (the origin <img src="svgs/14fd3d9f61a5bc79012bc3ee8ac92d9a.svg?invert_in_darkmode?sanitize=true" align=middle width=52.05486pt height=24.6576pt/>) is mapped to
 the "rest tail" inside the model. This means that the _translation_ part of the
 matrix <img src="svgs/ac1f0feae8dd6b2ca2cb67b3e48ed33e.svg?invert_in_darkmode?sanitize=true" align=middle width=13.150665pt height=32.14629pt/> is simply the tail position, <img src="svgs/3563b877675715bf1b360a6df4d8b36c.svg?invert_in_darkmode?sanitize=true" align=middle width=49.11621pt height=26.76201pt/>:
-<p align="center"><img src="svgs/b3b40ff84ab63e216eaf5dbe2a8816c3.svg?invert_in_darkmode?sanitize=true" align=middle width=372.0882pt height=138.08355pt/></p>
+<p align="center"><img src="svgs/7ac62e1378b7bb3428e08fed2f19ab73.svg?invert_in_darkmode?sanitize=true" align=middle width=261.2841pt height=138.08355pt/></p>
 
 The bone's
 rotation is chosen so that the "canonical tip" <img src="svgs/fdbfbfa4f80d9334e03890cf0313d2c7.svg?invert_in_darkmode?sanitize=true" align=middle width=50.68503pt height=24.6576pt/> maps to the "rest
 tip" <img src="svgs/5de02a881c9969bdb7ea77cd77815aea.svg?invert_in_darkmode?sanitize=true" align=middle width=51.32391pt height=32.42019pt/>:
-<p align="center"><img src="svgs/5bc53f0e65a553e78dce73a6215b76fb.svg?invert_in_darkmode?sanitize=true" align=middle width=336.80625pt height=138.08355pt/></p>
+<p align="center"><img src="svgs/738e3f24ea4849ebad28caab669a0aaa.svg?invert_in_darkmode?sanitize=true" align=middle width=226.0038pt height=138.08355pt/></p>
 
 Typically the "rest tail" of is coincident with the "rest tip" of its
 parent (if it exists): 
@@ -137,7 +137,7 @@ rotate by our relative rotation <img src="svgs/16716731bb131a1a4537324db4e3f635.
 <img src="svgs/eb17c8223b0f3c0aae89ee2237516cc6.svg?invert_in_darkmode?sanitize=true" align=middle width=14.257155pt height=32.05488pt/>). With our relative transformation accomplished, we continue _up the
 tree_ [recursively](https://en.wikipedia.org/wiki/Recursion_(computer_science))
 applying our parent's relative transformation, and our grandparent's and so on:
-<p align="center"><img src="svgs/55b6eb4310d800cf365ef7ac4244c7db.svg?invert_in_darkmode?sanitize=true" align=middle width=457.90305pt height=157.809795pt/></p>
+<p align="center"><img src="svgs/713f2dd4ed0e6ef0dc95c592c3f68e39.svg?invert_in_darkmode?sanitize=true" align=middle width=402.50265pt height=157.809795pt/></p>
 
 > **Question:** Does using relative rotations ensure that bone tails stay
 > coincident with parent tips?
@@ -161,7 +161,7 @@ rotations (three [Euler angles][eulerangles], <img src="svgs/e1a50bfa56675544041
 is conducted in its canonical frame and then _brought_ through the rest frame
 through a change of coordinates:
 
-<p align="center"><img src="svgs/630b9a297055c6bb7796cec313a4051c.svg?invert_in_darkmode?sanitize=true" align=middle width=724.82685pt height=157.809795pt/></p>
+<p align="center"><img src="svgs/1019920fa305d295d1cee633b09ed6c6.svg?invert_in_darkmode?sanitize=true" align=middle width=558.62235pt height=157.809795pt/></p>
 where the matrix <img src="svgs/900aa2972f345f0258b2e6a8b61c3a49.svg?invert_in_darkmode?sanitize=true" align=middle width=106.006395pt height=26.76201pt/> is the rotation by <img src="svgs/0e62162a970fbed24c43cd8e91daf0d1.svg?invert_in_darkmode?sanitize=true" align=middle width=10.753545pt height=14.15535pt/> degrees around
 the <img src="svgs/31fae8b8b78ebe01cbfbe2fe53832624.svg?invert_in_darkmode?sanitize=true" align=middle width=12.21099pt height=14.15535pt/>-axis.
 
